@@ -1,65 +1,89 @@
-
+import { useCartStore } from '../store/cart-store';
 import { CATEGORIES } from '@/assets/categories';
 import { FontAwesome } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import React from 'react';
-import {StyleSheet, Text, View, Image, Pressable, TouchableOpacity, FlatList } from 'react-native';
-
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Pressable,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
 
 export const ListHeader = () => {
+  const itemCount = useCartStore((state) => state.getItemCount());
+
   return (
     <View>
-      <View style={styles.headerContainer} />
-      <View style={styles.headerTop}>
-        <View style={styles.headerLeft}>
-          <View style={styles.avatarContainer}>
-            <Image
-              source={{uri: 'https://via.placeholder.com/40'}}
-              style={styles.avatarImage}
-            />
-            <Text style={styles.avatarText}>Hello, User</Text>
+      {/* Top Header */}
+      <View style={styles.headerContainer}>
+        <View style={styles.headerTop}>
+          <View style={styles.headerLeft}>
+            <View style={styles.avatarContainer}>
+              <Image
+                source={{ uri: 'https://via.placeholder.com/40' }}
+                style={styles.avatarImage}
+              />
+              <Text style={styles.avatarText}>Hello, User</Text>
+            </View>
+          </View>
+
+          <View style={styles.headerRight}>
+            <Link style={styles.cartContainer} href="/cart" asChild>
+              <Pressable>
+                {({ pressed }) => (
+                  <View>
+                    <FontAwesome
+                      name="shopping-cart"
+                      size={25}
+                      color="gray"
+                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                    />
+                    {itemCount > 0 && (
+                      <View style={styles.badgeContainer}>
+                        <Text style={styles.badgeText}>{itemCount}</Text>
+                      </View>
+                    )}
+                  </View>
+                )}
+              </Pressable>
+            </Link>
+
+            <TouchableOpacity
+              // onPress={handleSignOut}
+              style={styles.signOutButton}
+            >
+              <FontAwesome name="sign-out" size={25} color="red" />
+            </TouchableOpacity>
           </View>
         </View>
-         <View style={styles.headerRight}>
-          <Link style={styles.cartContainer} href='/cart' asChild>
-            <Pressable>
-              {({ pressed }) => (
-                <View>
-                  <FontAwesome
-                    name='shopping-cart'
-                    size={25}
-                    color='gray'
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-
-                  <View style={styles.badgeContainer}>
-                    <Text style={styles.badgeText}>{1}</Text>
-                  </View>
-                </View>
-              )}
-            </Pressable>
-          </Link>
-          {<TouchableOpacity
-            // onPress={handleSignOut}
-            style={styles.signOutButton}
-          >
-            <FontAwesome name='sign-out' size={25} color='red' />
-          </TouchableOpacity> };
-        </View>
       </View>
+
+      {/* Hero Banner */}
       <View style={styles.heroContainer}>
         <Image
           source={require('../../../my-app/assets/images/hero.png')}
           style={styles.heroImage}
         />
       </View>
+
+      {/* Categories Section */}
       <View style={styles.headerContainer}>
-        <Text style= {styles.sectionTitle}>Categories
-        </Text>
+        <Text style={styles.sectionTitle}>Categories</Text>
+
         <FlatList
           data={CATEGORIES}
           renderItem={({ item }) => (
-            <Link asChild href={{ pathname: '/category/[slug]', params: { slug: item.slug } }}>
+            <Link
+              asChild
+              href={{
+                pathname: '/category/[slug]',
+                params: { slug: item.slug },
+              }}
+            >
               <Pressable style={styles.category}>
                 <Image
                   source={{ uri: item.imageUrl }}
@@ -69,10 +93,11 @@ export const ListHeader = () => {
               </Pressable>
             </Link>
           )}
-          keyExtractor={item => item.name}
+          keyExtractor={(item) => item.name}
           horizontal
           showsHorizontalScrollIndicator={false}
         />
+
         <Text style={styles.categoriesContainer}>Products</Text>
       </View>
     </View>
